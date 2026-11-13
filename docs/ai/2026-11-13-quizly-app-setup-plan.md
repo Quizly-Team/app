@@ -8,7 +8,49 @@
 
 **Tech Stack:** Expo SDK 58.0.25, React Native 0.88.1, React 19, TypeScript strict, expo-router, TanStack Query, oxlint, oxfmt, vitest
 
-**Spec:** `/Users/yura/Desktop/2026-11-13-quizly-app-setup-design.md`
+**Spec:** `docs/ai/2026-11-13-quizly-app-setup-design.md`
+
+## 실행 결과 (2026-11-13)
+
+| 태스크 | 상태 | 커밋 |
+| --- | --- | --- |
+| 1. 레포 생성과 Expo 스캐폴드 | 완료 | `chore: Expo 프로젝트 스캐폴드와 설계 문서 추가` |
+| 2. 검증 게이트와 첫 테스트 | 완료 | `chore: 검증 게이트와 브레이크포인트 추가` |
+| 3. 토큰 변환과 3환경 레이아웃 | **보류.** 디자이너 확인 대기 | - |
+| 4. rh 하네스 이식 | 완료 | `chore: rh 하네스 이식` |
+| 5. 웹 레포 CLAUDE.md 정정 | 완료 | `Quizly-Team/frontend` PR #135 (Closes #134) |
+
+### 계획과 실제가 달랐던 것
+
+| 항목 | 계획 | 실제 |
+| --- | --- | --- |
+| 라우트 위치 | Task 1 Step 2 에서 `app/` 을 `src/app/` 으로 옮긴다 | `create-expo-app` 의 `default` 템플릿이 **이미 `src/app/`** 을 쓴다. 이동 불필요 |
+| 브레이크포인트 모듈 | `breakpoint.ts` 한 파일에 순수 함수와 훅 | **모듈을 나눠야 했다.** 한 파일에 두면 테스트가 `react-native` 를 끌어와 vitest 가 RN 의 Flow 소스 파싱에 실패한다. 함수 분리로는 부족하고 import 그래프를 끊어야 한다. `breakpoint.ts`(순수) + `useBreakpoint.ts`(RN) |
+| oxfmt | 설정 없이 쓴다 | `.oxfmtrc.json` 의 `ignorePatterns` 에 `docs/**` 와 `.claude/**` 를 넣었다. 안 넣으면 한국어 표가 든 문서를 재포맷한다 |
+| 앱 식별자 | 언급 없음 | 템플릿 기본값이 `app` 이라 `slug`/`scheme` 을 `quizly`, Android 패키지를 `kr.co.quizly.app` 으로 바꿨다. `slug` 는 나중에 바꾸면 EAS 연결이 깨진다 |
+| iOS 지원 | 언급 없음 | `ios.supportsTablet` 은 **미설정이면 false** 다 (`@expo/config-plugins` 의 `getSupportsTablet` 이 `!!config.ios?.supportsTablet`). 태블릿 우선 제품이라 켰다 |
+| 아이콘과 스플래시 | 범위 밖 | 템플릿의 Expo 브랜딩 에셋을 지우면서 `app.json` 의 참조도 같이 지웠다. 디자인 수령 후 다시 넣는다 |
+
+### 실행하며 새로 실측한 것
+
+| 항목 | 값 |
+| --- | --- |
+| 스캐폴드 버전 | Expo `58.0.25`, RN `0.88.1`, React `19.3.0`, TypeScript `6.0.3` |
+| New Architecture | **켜져 있다.** logcat 에 `Running "main" with {... "fabric":true}` |
+| Android 태블릿 AVD | `ifent_tab_a15` (Android 15). 빌드와 설치 확인 |
+| Android 폰 AVD | **없다.** Task 3 의 폰 검증에 선행 조건 |
+| iOS 시뮬레이터 | Xcode 27.2 설치됨, **런타임 0개.** `xcodebuild -downloadPlatform iOS` 선행 필요 |
+| 백엔드 응답 | ⚠️ **성공은 DTO 직접, 에러만 봉투.** 균일한 봉투를 가정하면 깨진다 |
+| 토큰 레이아웃 값 | `touch-min 40`, `content-max 1200`, `readable-max 840`, `panel 420`. 브레이크포인트 토큰은 없다 |
+
+### 남은 미결
+
+1. **`layout.touch-min` 40 대 플랫폼 하한 44.** 디자이너가 토큰을 올려야 한다 (설계 5.4.1)
+2. 태블릿과 폰 브레이크포인트 확정값. 잠정 768
+3. 신규 디자인이 기존 토큰 세트를 그대로 쓰는지
+4. 백엔드 `/v3/api-docs` 를 인증 예외로 열기 (서버 변경 요청)
+5. Apple Developer 계정 결제 시점
+6. 기존 웹 트래픽 규모 (랜딩 전환 시점 근거)
 
 ## Global Constraints
 
