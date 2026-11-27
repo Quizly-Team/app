@@ -1,0 +1,24 @@
+name: Chromatic
+
+# push 만 쓴다. fork 에서 온 PR 은 이 레포에 push 이벤트를 만들지 않아 시크릿에 닿지 않는다.
+# pull_request_target 은 쓰지 않는다. base 레포 권한과 시크릿으로 PR 코드를 돌리게 된다.
+on: push
+
+permissions:
+  contents: read
+
+jobs:
+  chromatic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - uses: chromaui/action@0a7067e5ffc663a631b14db505d8a94b26e1bf2f # v18, 2026-11-27 에 고정
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}

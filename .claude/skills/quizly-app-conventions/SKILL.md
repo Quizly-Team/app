@@ -25,6 +25,7 @@ description: >
 | Format | oxfmt (설정은 `.oxfmtrc.json`, `docs/**` 제외) |
 | 테스트 | vitest (순수 함수 전용) |
 | 플랫폼 | **iOS 와 Android 한 코드.** 출시만 Android 먼저 |
+| 시각적 테스트 | Storybook (`@storybook/react-native-web-vite`) + Chromatic. PR 마다 스냅샷을 baseline 과 비교한다. 웹 근사이고 기기 렌더링이 아니다 |
 
 **NativeWind 를 쓰지 않는다.** 안정판 `4.2.7` 의 peerDependencies 가 `{tailwindcss: ">3.3.0"}` 하나뿐이라 Expo 58 과 RN 0.88 조합을 보장하지 않는다. `5.0.0-rc.1` 은 아직 RC 다. 같은 조직의 `if_ent_app` 이 그 RC 에서 밟은 함정 두 개가 **둘 다 빌드는 통과하고 화면만 조용히 비는** 형태로 실패했다. 나중에 누가 다시 꺼내려면 안정판 peer 를 먼저 확인한다.
 
@@ -80,6 +81,7 @@ curl -fsS 'https://api.github.com/repos/Quizly-Team/frontend/compare/dev...desig
 | 간격 | 고정 px 금지. `theme.ts` 의 스케일에서만 꺼낸다 |
 | 2단에서 1단 | **한 컴포넌트 안에서** 전환한다. 화면을 두 벌 만들지 않는다 |
 | 터치 타겟 | 누를 수 있는 요소는 `minHeight` 와 `minWidth` 를 `theme.ts` 의 터치 최소값으로 준다 |
+| 시각적 테스트 | Chromatic mode 가 없다. 모든 story 를 Chromatic 기본 viewport 폭 1200 하나로 찍고, 그 폭에서 `useBreakpoint()` 는 언제나 `'tablet'` 이다. **phone 배치는 스냅샷에 없다.** `useBreakpoint()` 로 배치가 바뀌는 컴포넌트의 story 를 처음 넣는 PR 이 tablet, phone 두 mode 를 같이 넣는다. 폭을 정하는 규칙은 `docs/ai/plan/storybook-chromatic.md` §6-1 |
 
 허용하는 형태는 이렇다.
 
@@ -107,7 +109,7 @@ return bp === "tablet" ? <TabletHome /> : <PhoneHome />;
 
 ## 컴포넌트
 
-- 함수 컴포넌트, 화살표 또는 함수 선언. `export default` 는 expo-router 파일에서만
+- 함수 컴포넌트, 화살표 또는 함수 선언. `export default` 는 expo-router 파일과 Storybook 파일(`.storybook/*.ts`, `*.stories.tsx`)에서만. 둘 다 도구가 default export 를 요구한다
 - 스타일은 `StyleSheet.create`. 인라인 객체를 렌더마다 새로 만들지 않는다
 - 비즈니스 로직은 훅으로 분리한다. 컴포넌트는 렌더링만
 - 컴포넌트 안에 컴포넌트를 중첩 정의하지 않는다
@@ -172,6 +174,7 @@ RN 0.76 부터 New Architecture(JSI, Fabric, TurboModules)가 기본이고 **브
 | 이슈 | 먼저 만든다. 제목은 **명사형 어미** (`fix: Completed 제거`). 서술형 `~다` 금지 |
 | 브랜치 | `feat/#<번호>`, `fix/#<번호>` |
 | PR | **base 는 `dev`.** 본문에 `Closes #<번호>`. 결론만 간결하게, 긴 근거는 `docs/ai/` 로 빼고 링크 |
+| 머지 | `dev` 는 Chromatic `UI Tests` 통과를 요구한다 (classic branch protection rule). 시각 변경이 있으면 Chromatic 빌드에서 의도한 변경을 Accept 하고 의도하지 않은 변경은 고친다. admin 의 bypass 머지는 스냅샷 한도 소진 같은 막힘에만 쓰고, 그 PR 번호를 `chore: Chromatic 스냅샷 사용량 측정` 이슈에 댓글로 남긴다 |
 | 커밋 | **제목만.** 본문, `Co-Authored-By`, AI 서명 전부 금지 |
 | `docs/ai/**` | 코드와 **같은 커밋**에 넣는다 |
 
