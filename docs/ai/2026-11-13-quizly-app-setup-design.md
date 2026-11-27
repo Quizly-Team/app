@@ -3,7 +3,7 @@
 | | |
 |---|---|
 | 날짜 | 2026-11-13 |
-| 대상 | `Quizly-Team/app` (신규), `Quizly-Team/frontend` (기존, 소폭) |
+| 대상 | `Quizly-Team/quizly_app` (신규, 2026-11-27 `app` 에서 이름 변경), `Quizly-Team/frontend` (기존, 소폭) |
 | 작성 근거 | 2026-11-13 브레인스토밍 세션 |
 | 이동 예정 | 앱 레포 생성 후 `docs/ai/` 로 |
 
@@ -102,7 +102,7 @@ Capacitor 는 로드맵(2차 PWA 강화)과는 가장 잘 맞는다. 코드 하�
 
 | 항목 | 값 |
 |---|---|
-| 이름 | `Quizly-Team/app`, **public** (기존 두 레포와 동일) |
+| 이름 | `Quizly-Team/quizly_app`, **public**. 2026-11-27 `app` 에서 이름 변경 (기존 두 레포와 동일) |
 | 브랜치 | `main` + `dev` 2단. **PR base 는 `dev`**, 출시 당에 `dev` to `main` |
 | `.claude/` | **커밋한다.** gitignore 에 넣지 않는다 |
 | `docs/ai/**` | 코드와 같은 커밋에 사람이 올린다 |
