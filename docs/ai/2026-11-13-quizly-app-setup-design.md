@@ -167,7 +167,7 @@ RC 를 밟지 않는 게 이 결정의 핵심이다. `if_ent_app` 이 NativeWind
 | 항목 | 결정 |
 |---|---|
 | 토큰 소스 | **하나다.** 디자이너는 계속 웹 레포로만 Push 한다. 두 곳에 Push 하게 만들면 깨진다 |
-| 가져오는 방법 | 앱 레포 `scripts/build-tokens.mjs` 가 `https://raw.githubusercontent.com/Quizly-Team/frontend/dev/tokens/tokens.json` 을 받는다. **public 레포라 인증이 필요 없다** |
+| 가져오는 방법 | 앱 레포 `scripts/build-tokens.mjs` 가 `TOKENS_SHA`(40자 커밋 SHA)로 고정한 `https://raw.githubusercontent.com/Quizly-Team/frontend/<TOKENS_SHA>/tokens/tokens.json` 을 받는다. 브랜치를 따라가지 않는다 (2026-11-27 결정). **public 레포라 인증이 필요 없다** |
 | 출력 | `src/shared/constants/theme.ts` 를 **생성**한다. `as const` 객체다. RN 은 CSS 변수를 못 쓴다 |
 | 갱신 | `npm run tokens:build` 수동. **크로스 레포 CI 와 PAT 를 만들지 않는다** |
 | 직접 수정 | 금지. 자동 생성 파일이고 파일 머리에 그렇게 적는다 |

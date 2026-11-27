@@ -54,7 +54,7 @@ const columns = bp === "tablet" ? 2 : 1;
 
 누를 수 있는 요소(`Pressable`, `TouchableOpacity`, `Button`, `onPress` 가 달린 것)가 `minHeight` 와 `minWidth` 를 갖고 있는가. 값이 `theme.ts` 의 터치 최소값에서 오는가.
 
-⚠️ **현재 토큰 값이 플랫폼 하한에 미달이다.** `layout.touch-min` 이 40 이고, Apple HIG 는 44pt, Material 은 48dp 를 요구한다. 미해결 항목이다 (`docs/ai/` 의 설계 문서 5.4.1). 테스트가 이걸 막고 있다. **테스트를 고쳐서 통과시키는 diff 가 보이면 Critical 이다.**
+⚠️ **현재 토큰 값이 플랫폼 하한에 미달이다.** `layout.touch-min` 이 40 이고, Apple HIG 는 44pt, Material 은 48dp 를 요구한다. 미해결 항목이다 (`docs/ai/` 의 설계 문서 5.4.1). 터치 타겟 미결은 `theme.test.ts` 의 **현재값 고정 테스트**로 표현돼 있다 (2026-11-13 사람 결정 (a), `docs/ai/plan/1.md` §6-9). **현재값 고정 테스트를 약화시키거나 삭제하는 diff 가 보이면 Critical 이다.**
 
 ### 4. theme 생성물 직접 수정
 
