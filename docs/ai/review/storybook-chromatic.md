@@ -76,3 +76,59 @@ diff 는 계획 §3 의 파일 12개와 정확히 같고 그 밖을 건드리지
 | 문서 | `SKILL.md` 28, 84, 112, 177행, `CLAUDE.md` 65, 143-144, 169행, README | 계획 Step 7 의 문장과 같다. README 차이표는 디자이너용이라 근거 열을 뺐고, 폰트 근거를 웹 칸에 합쳤다. 내용 손실은 없다 |
 
 보지 않은 것. §5 수동(로컬 Storybook 화면, Chromatic, 기기)은 QA 와 사람의 몫이라 보지 않았다. 레이아웃 네 항목(고정 px, 화면 두 벌, 터치 타겟, theme 직접 수정)은 `layout-auditor` 의 몫이다.
+
+## 2회차 (사람 피드백 반영)
+
+대상은 `360123f` 위의 미커밋 워킹트리 diff 다. 파일은 `src/shared/constants/flattenColors.ts`, `flattenColors.test.ts`, `theme.stories.tsx`, `docs/ai/plan/storybook-chromatic.md` 넷이다. 근거는 계획 22~29행의 "구현 후 사람 피드백 (2026-11-27, PR #15)" 블록이다. 1회차에 approve 한 `360123f` 는 다시 보지 않았다.
+
+### 판정 근거
+
+diff 는 피드백 블록의 4항목을 했고, 그 밖의 코드는 건드리지 않았다. Typography, Spacing, Radius 는 소스 diff 가 없다. `react-native-web` 으로 정적 렌더해 보니 세 스토리의 마크업이 HEAD 판과 바이트 단위로 같았다. 값이 바뀐 스타일 키는 `swatch` 하나인데, HEAD 에서도 Colors 만 쓰던 키다. `groupColors` 가 든 파일은 import 가 0개이고, 함수에 `any`, `as`, `!` 가 없다. 새 테스트는 섹션 순서, 리프 순서, 리프 이름 자르기를 `toEqual` 로 고정한다. 순서를 깨뜨린 변형 5개를 넣으면 모두 이 테스트에서 FAIL 했다. 값 글자는 카드마다 독립 `Text` 로 남아 있다. 정적 렌더에서 값 50개와 섹션 제목 16개가 전부 텍스트 노드로 나왔고, `theme.ts` 값 한 글자를 바꾸면 Colors 마크업이 달라졌다. 섹션 제목의 `semibold` 선택은 맞다. 16, 18, 20 크기인 `text-1rg`, `text-1md`, `text-2md` 에는 `semibold`, `medium`, `regular` 만 있고 `bold` 는 22 (`text-1lg`) 부터 있다. 게이트는 `build-storybook` 앞뒤로 직접 두 번 돌렸고 두 번 다 `PASS` 였다. `build-storybook` 은 exit 0 이고 story 는 4개다. Critical 과 Major 가 없어 approve 를 유지한다. 다만 계획 문서에서 planner 로 돌려야 할 것이 둘 있다 (계획 범위 밖). 그중 1 은 머지 전에 사람이 정해야 한다.
+
+### Critical
+
+없다.
+
+### Major
+
+없다.
+
+### Minor
+
+#### m1. 제목과 카드 글자의 스타일이 피드백 블록에 없다. 그래서 Step 4 규칙과 어긋난 채 남았다
+
+`theme.stories.tsx:89`, `:94`, `:95`. 제목에는 `TYPOGRAPHY["text-1md"].semibold` 를, 카드의 이름과 값에는 `TYPOGRAPHY["text-2xs"].regular` 를 줬다. 계획 343행의 Step 4 규칙은 "라벨 글자에는 스타일을 주지 않는다 (Typography 는 그 variant 스타일만)" 이다. 피드백 블록이 Colors 에서 바꾼 것은 "꾸밈을 넣지 않는다" 한 문장과 4항목뿐인데, 4항목 어디에도 글자 스타일이 없다. 코드로서 틀린 곳은 없다. 값은 토큰에서 오고 리터럴이 없다. 키가 사라지면 `as const` 라서 typecheck 가 깨진다. 깨지는 시나리오: plan 1 이 SHA 를 올리면서 `text-2xs/regular` 의 `lineHeight` 만 바꾼다고 하자. 색은 하나도 안 바뀌었는데 Colors 스냅샷에서 카드 50개의 글자 위치가 전부 diff 로 뜬다. 피그마와 맞대 보던 디자이너는 이 Colors diff 를 색 변경으로 읽을 수 있다. 새로 놓치는 변경은 없고 diff 가 늘 뿐이다. 고칠 곳은 코드가 아니라 피드백 블록이다. 5번째 항목으로 "제목은 `text-1md/semibold` (16~20 에 `bold` 가 없다), 카드 글자는 `text-2xs/regular`" 를 적어 계획과 코드를 맞춘다.
+
+### 계획 범위 밖
+
+1. **§6-24 의 "글자 한 개 변경이 Chromatic diff 를 내는가" 확인이 맡을 사람을 잃는다. 머지 전에 사람이 정한다.** 계획 29행. 블록은 Step 9 의 6 마지막 항목을 근거로, 이 PR 에서 갈래 P 의 막힘 확인을 하고 (가) 임시 PR 은 하지 않는다고 적었다. 막힘 자체와 bypass 체크박스 문구는 이 PR 의 pending 에서 볼 수 있다. 그런데 §6-24 의 둘째 미확인 "글자 한 개 변경이 Chromatic diff 를 내는지" 를 확정하는 경로는 둘뿐이다. (가) 의 `Spacing` 구분자 한 글자 변경, 또는 (나) 의 Step 8 이슈 4 다 (§6-24 대응 열). 이번 Colors diff 는 레이아웃 전체가 바뀐 것이라 한 글자 감도를 보여 주지 못한다. 깨지는 시나리오: 나중에 SHA 갱신 PR 이 `text-1rg/regular` 의 `letterSpacing` 을 `-0.06` 에서 `-0.05` 로 바꾸면 Typography 라벨에서 글리프 하나만 바뀐다. Chromatic 이 그 픽셀을 anti-aliasing 으로 무시하면 `UI Tests` 가 저절로 통과하고, 값 변경은 사람 눈에 오르지 않은 채 머지된다. §1 의 "네 export 의 값이 하나라도 바뀌면 diff" 가 검증 없이 남는다. 또 이 블록은 182행의 "(가) 사람 결정 2026-11-27" 을 이 경로에서 뒤집는다. 같은 구멍은 Step 9 의 6 마지막 항목에 원래 있었고, 블록은 그 선례를 따랐을 뿐이다. 선택지는 둘이다. (ㄱ) 이 PR 의 Colors diff 를 Accept 한 뒤 (가) 를 그대로 돌린다. (ㄴ) Step 8 이슈 4 를 만든다. planner 가 블록과 Step 9 의 6 마지막 항목에 둘 중 하나를 적는다. 사람의 지시가 실제로 (가) 생략까지 포함했다면 그 사실을 블록에 적는다.
+2. **계획의 Colors 관련 문장 다섯 곳이 이번 diff 로 거짓이 됐다.** 블록은 Step 4 의 한 문장만 Colors 에서 바꾼다고 적었다. 하지만 아래 문장은 지금 코드와 다르다.
+   - 328행 Step 4 표의 Colors 행: "견본 1개와 그 옆 글자 `경로 값`", 데이터 `flattenColors(COLORS)`. 지금은 섹션 제목이 부모 경로이고, 카드에 리프 이름과 값이 두 줄로 있으며, 데이터는 `groupColors(COLORS)` 다
+   - 343행 "라벨 글자에는 스타일을 주지 않는다" (Minor m1)
+   - 527행 §5 자동 2 의 "`flattenColors.test.ts` 가 1개 통과". 지금은 2 passed 다
+   - 601~603행 §5 단위 테스트 표: 행이 `flattenColors` 하나이고 "새 판정 함수, 파서, 포맷터는 이것 하나다" 라고 적혀 있다
+   - 608행 §5 수동 로컬 2 의 "견본마다 `경로 값` 글자가 붙어 있다"
+
+   깨지는 시나리오: integration-qa 가 §5 자동 2 를 글자대로 돌리면 `2 passed` 가 나와 기대값과 다르다고 보고한다. 수동 로컬 2 를 따르는 사람은 견본 옆에 `경로 값` 한 줄이 없으니 실패로 적는다. 둘 다 거짓 FAIL 이라 루프가 한 번 헛돈다. planner 가 고친다. 고치기 전에 QA 를 돌린다면, 블록이 우선한다고 QA 에 알린다.
+
+### 확인 기록 (2회차)
+
+| 항목 | 방법 | 결과 |
+| --- | --- | --- |
+| 게이트 | `.claude/scripts/check-gate.sh` 직접 실행. `build-storybook` 앞뒤로 두 번 | 두 번 다 네 줄 `ok`, `PASS`, exit 0 |
+| Storybook 빌드 | `npm run build-storybook`, Step 4 의 `index.json` 집계 | exit 0. story 4개 (`foundations--colors`, `--typography`, `--spacing`, `--radius`). 경고는 chunk 크기 하나뿐 |
+| 빌드 산출물 | `git status --porcelain` 에서 `storybook-static`, `storybook.log` grep | 0건 |
+| 단위 테스트 | `npx vitest run src/shared/constants/flattenColors.test.ts` | 2 passed |
+| 음성 대조 | /tmp 사본의 `groupColors` 를 다섯 가지로 깨뜨렸다. (1) 섹션을 이름순 정렬 (2) 리프 순서 뒤집기 (3) 부모가 마지막에 나온 순서 (`delete` 뒤 `set`) (4) 리프 이름 대신 전체 경로 (5) 같은 부모가 연달아 나올 때만 묶기 | 다섯 다 `1 failed, 1 passed` 이고, 실패한 쪽은 새 테스트다. 원본으로 되돌리면 2 passed. 테스트의 `white`, `black` 이 `primary` 를 사이에 두고 떨어져 있어서 (3) 과 (5) 를 가른다 |
+| 실제 COLORS | /tmp 에서 `groupColors(COLORS)` 출력 | 섹션 16개, 리프 50개 (`flattenColors` 와 같다). 순서는 `primary` 에서 `shadow` 까지 `theme.ts` 선언 순서다. 섹션을 다시 펴면 `flattenColors(COLORS)` 와 순서까지 같다. 최상위 리프가 없어서 `""` 섹션은 생기지 않는다 |
+| 값 글자 렌더링 | /tmp 에서 `react-native` 를 `react-native-web` 으로 별칭하고 `renderToStaticMarkup` 으로 Colors 를 그렸다 | 값 50개가 모두 `>값<` 텍스트 노드로 있다. 제목 16개도 있다. `theme.ts` 사본의 `shadow.key-strong` 을 `#1a1a1a24` 에서 `#1a1a1a25` 로 바꾸면 Colors 마크업이 달라지고 새 값 글자가 나온다 |
+| 다른 세 스토리 | HEAD 의 `theme.stories.tsx` 와 지금 파일을 같은 방법으로 렌더 | Typography, Spacing, Radius 마크업이 HEAD 와 같고 Colors 만 다르다. `styles.flow`, `item`, `column`, `fill`, `radiusBox` 는 diff 가 없다. 바뀐 `swatch` 는 HEAD 에서도 Colors 만 쓰던 키다 |
+| 순수성 | `flattenColors.ts` 의 import grep | 0개 |
+| 타입 | 변경 줄에서 `any`, `as`, `!` 단언, `enum`, `console.` grep | 0건. 파일에 남은 `as [string, string]` (10행) 은 1회차에 본 기존 코드다 |
+| 리터럴 (§5 자동 9) | 세 줄 원문 | 셋 다 0행. 새 숫자는 전부 `SPACING` 키다. 테두리 두께는 `StyleSheet.hairlineWidth`, 색은 `COLORS.line.normal` 이다 |
+| `semibold` | `theme.ts` 의 `TYPOGRAPHY` 크기별 굵기 키 | `text-1lg` (22) 이상은 `bold`, `medium`, `regular` 이다. `text-2md` (20) 이하는 `semibold`, `medium`, `regular` 이다. 16~20 에서 가장 굵은 키가 `semibold` 다 |
+| `theme.ts` | `git diff HEAD -- src/shared/constants/theme.ts` | 변경 없음 |
+| React key | 소스 | `section.parent` 는 Map 키라 유일하다. `card.name` 은 같은 객체의 키라 섹션 안에서 유일하다 |
+| 산문 | 추가된 줄에서 긴 대시와 가운뎃점 grep | 0건 |
+
+보지 않은 것. Chromatic 과 로컬 Storybook 화면은 QA 와 사람의 몫이다. 카드 폭 80 에서 글자가 줄바꿈되는지, 흰 배경 위 테두리 대비, 두 사이즈는 `layout-auditor` 의 몫이다. §5 자동 6 (앱 번들) 은 다시 돌리지 않았다. 이번 diff 는 앱이 import 하지 않는 두 파일 사이의 import 만 바꿨기 때문이다.

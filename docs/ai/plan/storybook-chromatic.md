@@ -19,6 +19,18 @@ approved_at: 2026-11-27
 > | 3 | 2026-11-27 | 사람 결정 2026-11-27 과 비평 2회차(verdict sound, Minor 5) 반영. (a) 시작점을 "첫 공유 컴포넌트 PR" 에서 "지금, Foundations 스토리(색, 타이포, 간격, 라운딩)" 로 바꿨다 (Step 0-2, Step 4). 착수 조건에서 첫 컴포넌트 계획을 뺐다 (Step 0-4). (b) 목적을 Storybook 시각적 테스트 핸드북의 4단계로 다시 쓰고, `UI Tests` 를 `dev` 의 required check 로 **이 PR 에서** 건다 (Step 0-3). §2 의 Non-goal 전부를 같은 기준으로 재판정했다. (c) 비평 m1 에서 m5 를 전부 반영했다. m1, m2 는 §5 자동 7, m3 은 Step 0-4, m4, m5 는 §6-1. (d) 이 PR 에는 Chromatic mode 를 두지 않는다 (Step 0-5). 2회차 Step 3 의 미리보기 폭 상수와 테스트, 2회차 Step 4 의 `.storybook/preview.ts` 를 뺐다. 폭을 읽는 규칙은 §6-1 로 옮겼다. (e) 피그마는 파일 이름만 쓴다 (§6-1). 순수 함수 `flattenColors` 와 그 테스트가 새로 들어왔다 (Step 3). 단계 번호가 바뀌었다. 2회차 Step 6 은 4, 7 은 6, 8 은 7, 9 는 8, 10 은 9 다 |
 > | 4 | 2026-11-27 | 비평 3회차(verdict revise, Critical 1, Major 3, Minor 4) 반영. **C1.** 새 Chromatic 프로젝트의 Build 1 이 auto-accept 될 수 있다 (CLI 저장소 문서). Step 9 와 §5 Chromatic 2, 4, 5, 6 을 갈래 A (auto-accept) 와 갈래 P (pending) 로 갈랐다. 판정은 §5 Chromatic 2 의 표다. auto-accept 는 공식 문서에 없어 §6-23 에 미확인으로 남겼다. **M1.** classic branch protection rule 로 정하고 ruleset 을 쓰지 않는다 (Step 0-3). 화면 경로를 "Add classic branch protection rule", "Create" 로 고쳤다. 협업자 셋 전원이 admin 이라 차단 확인을 admin 계정 기준(Required 표시, 비활성 머지 버튼, bypass 체크박스)으로 바꾸고 bypass 가 실제로 머지 버튼을 여는지 보는 단계를 넣었다 (§5 Chromatic 4). 전원 admin 을 유지할지는 사람이 정한다 (Step 0-4 표). **M2.** "mode 없음, 폭 1200 하나, phone 배치는 스냅샷에 없다" 와 mode 도입 조건을 `quizly-app-conventions/SKILL.md` 의 "태블릿에서 폰으로" 표로 옮긴다 (Step 7). **M3.** §1 과 Step 0-2 의 주장을 "네 export 의 값 변경" 으로 좁혔다. 네 story 모두 값 글자를 같이 그리고 Radius 의 변을 `SPACING["80"]` 으로 고정했다 (Step 4). `OPACITY`, `LAYOUT` 은 넣지 않고 근거를 §2 에 적었다. **Minor.** m1 README 빠짐 목록을 `theme.ts` 머리 SHA 에 묶고 §5 자동 10 으로 검사한다. m2 plan 1 참조를 5회차로 고쳤다. m3 §5 자동 9 에 폭 API grep 을 더했다. m4 Step 8 이슈 3 (사용량 측정과 bypass 기록) 과 §6-8 을 고쳤다. §6 에 23 에서 26 을 더했다 |
 
+> **구현 후 사람 피드백 (2026-11-27, PR #15).** 첫 Chromatic 빌드를 본 사람이 Colors 스토리가 "정리가 안 되고 뒤죽박죽" 이라고 했다. 50개가 폭이 제각각인 라벨로 한 줄 흐름에 섞여 있어서다. 그래서 Step 4 의 "꾸밈을 넣지 않는다" 를 Colors 에 한해 아래로 바꾼다. 다른 세 스토리는 그대로다.
+>
+> 1. 부모 경로(`status/positive`, `interaction/neutral` 등)별 섹션으로 나누고, 섹션마다 제목을 단다. 순서는 `theme.ts` 의 선언 순서다
+> 2. 카드는 모두 같은 폭이다. 견본 아래에 리프 이름과 값을 줄을 나눠 쓴다
+> 3. 견본에 `StyleSheet.hairlineWidth` 두께, `COLORS.line.normal` 색의 테두리를 준다. 흰 견본 3개가 배경에서 보이게 하려는 것이다. 새 토큰이나 고정값은 쓰지 않는다
+> 4. 묶는 로직은 RN 비의존 순수 함수로 `flattenColors.ts` 에 두고 단위 테스트를 붙인다
+> 5. 섹션 제목은 `TYPOGRAPHY["text-1md"].semibold`, 카드 글자는 `TYPOGRAPHY["text-2xs"].regular` 다. Colors 에 한해 "라벨 글자에는 스타일을 주지 않는다" 를 대신한다 (리뷰 2회차 m1)
+>
+> 이 블록과 어긋나는 Step 4 와 §5 의 Colors 서술(한 줄 흐름, 라벨 무스타일, 꾸밈 없음)은 이 블록이 우선한다. QA 는 이 블록 기준으로 본다.
+>
+> 이 변경으로 다음 빌드에서 Colors 스냅샷에 diff 가 생긴다. 그래서 Step 9 의 6 마지막 항목대로 **머지 막힘 확인은 이 PR 에서 갈래 P 로** 한다. 다만 (가) 임시 PR 이 맡던 "글자 한 개 바뀐 것을 잡는지" 확인(§6-24)은 이 PR 의 diff 로 대신되지 않는다. 그래서 Step 0-4 의 사람 결정 (가) 는 유지하고, 이 PR 의 diff 를 Accept 한 뒤 임시 PR 을 그 용도로만 연다.
+
 ## 1. Context
 
 디자이너가 개발된 UI 를 보려면 지금은 에뮬레이터를 띄워야 하고, 디자이너 손에 그 환경이 없다. UI 가 바뀌었는지도 사람이 화면을 하나씩 열어 봐야 안다. 이 작업은 Storybook 시각적 테스트 핸드북 [^hb] 의 흐름을 이 레포에 그대로 들인다.
