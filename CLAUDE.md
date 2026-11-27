@@ -50,18 +50,19 @@ Plan 비평  ->  〔사람 승인〕  ->  Implement 비평  ->  QA
 
 ## 스택
 
-| 구분      | 값                                              |
-| --------- | ----------------------------------------------- |
-| 런타임    | Expo SDK 58, React Native 0.88, React 19.3      |
-| 언어      | TypeScript `strict`                             |
-| 라우팅    | expo-router (파일 기반, `src/app/`)             |
-| 서버 상태 | TanStack Query (첫 API 호출이 생길 때 도입)     |
-| 클라 상태 | 없다. 실제로 필요할 때 Zustand                  |
-| 스타일    | `StyleSheet` + `src/shared/constants/theme.ts`  |
-| Lint      | oxlint                                          |
-| Format    | oxfmt                                           |
-| 테스트    | vitest (순수 함수 전용)                         |
-| 플랫폼    | **iOS 와 Android 한 코드.** 출시만 Android 먼저 |
+| 구분          | 값                                                                                                                                  |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| 런타임        | Expo SDK 58, React Native 0.88, React 19.3                                                                                          |
+| 언어          | TypeScript `strict`                                                                                                                 |
+| 라우팅        | expo-router (파일 기반, `src/app/`)                                                                                                 |
+| 서버 상태     | TanStack Query (첫 API 호출이 생길 때 도입)                                                                                         |
+| 클라 상태     | 없다. 실제로 필요할 때 Zustand                                                                                                      |
+| 스타일        | `StyleSheet` + `src/shared/constants/theme.ts`                                                                                      |
+| Lint          | oxlint                                                                                                                              |
+| Format        | oxfmt                                                                                                                               |
+| 테스트        | vitest (순수 함수 전용)                                                                                                             |
+| 플랫폼        | **iOS 와 Android 한 코드.** 출시만 Android 먼저                                                                                     |
+| 시각적 테스트 | Storybook (`@storybook/react-native-web-vite`) + Chromatic. PR 마다 스냅샷을 baseline 과 비교한다. 웹 근사이고 기기 렌더링이 아니다 |
 
 New Architecture(JSI, Fabric, TurboModules)가 기본이다. 브릿지는 없다. 라이브러리를 고를 때 지원 여부를 확인한다.
 
@@ -138,6 +139,9 @@ npm run format:check   # oxfmt --check
 
 .claude/scripts/check-gate.sh        # 위 4개를 한 번에. 절대 0건
 .claude/scripts/check-gate.sh --fix  # 포맷만 고치고 검사
+
+npm run storybook        # 로컬 Storybook
+npm run build-storybook  # 정적 빌드
 ```
 
 네이티브 패키지 추가/제거, `app.json` 의 권한/플러그인/방향 변경 시 리빌드가 필요하다. JS/TS 만 고쳤으면 불필요하다.
@@ -157,13 +161,14 @@ iOS 시뮬레이터는 **유료 계정 없이 된다.** 계정이 막는 건 실
 
 **예외 없이 이슈 to 브랜치 to PR 이다.**
 
-| 단계         | 규칙                                                                           |
-| ------------ | ------------------------------------------------------------------------------ |
-| 이슈         | 먼저 만든다. 제목은 **명사형 어미** (`fix: Completed 제거`). 서술형 `~다` 금지 |
-| 브랜치       | `feat/#<번호>`, `fix/#<번호>`                                                  |
-| PR           | **base 는 `dev`.** 본문에 `Closes #<번호>`                                     |
-| 커밋         | **제목만.** 본문, `Co-Authored-By`, AI 서명 전부 금지                          |
-| `docs/ai/**` | 코드와 **같은 커밋**에 넣는다. AI 작업을 블랙박스로 두지 않는다                |
+| 단계         | 규칙                                                                                                                                                                                                                                                                                                             |
+| ------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 이슈         | 먼저 만든다. 제목은 **명사형 어미** (`fix: Completed 제거`). 서술형 `~다` 금지                                                                                                                                                                                                                                   |
+| 브랜치       | `feat/#<번호>`, `fix/#<번호>`                                                                                                                                                                                                                                                                                    |
+| PR           | **base 는 `dev`.** 본문에 `Closes #<번호>`                                                                                                                                                                                                                                                                       |
+| 머지         | `dev` 는 Chromatic `UI Tests` 통과를 요구한다 (classic branch protection rule). 시각 변경이 있으면 Chromatic 빌드에서 의도한 변경을 Accept 하고 의도하지 않은 변경은 고친다. admin 의 bypass 머지는 스냅샷 한도 소진 같은 막힘에만 쓰고, 그 PR 번호를 `chore: Chromatic 스냅샷 사용량 측정` 이슈에 댓글로 남긴다 |
+| 커밋         | **제목만.** 본문, `Co-Authored-By`, AI 서명 전부 금지                                                                                                                                                                                                                                                            |
+| `docs/ai/**` | 코드와 **같은 커밋**에 넣는다. AI 작업을 블랙박스로 두지 않는다                                                                                                                                                                                                                                                  |
 
 작업 중 발견한 별개 버그도 즉시 이슈화한다.
 
