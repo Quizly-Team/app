@@ -54,12 +54,21 @@ docs/ai/            설계와 파이프라인 산출물. 코드와 같은 커밋
 
 | 항목 | 값 |
 | --- | --- |
-| 단일 소스 | `Quizly-Team/frontend` 의 `dev` 브랜치 `tokens/tokens.json` (Tokens Studio, DTCG) |
+| 단일 소스 | `Quizly-Team/frontend` 의 `tokens/tokens.json` (Tokens Studio, DTCG). 앱은 `scripts/build-tokens.mjs` 의 `TOKENS_SHA`(40자 커밋 SHA)에 고정해 받는다 |
 | 디자이너 경로 | 피그마에서 웹 레포 `design-tokens` 브랜치로 Push. **웹 레포로만 Push 한다** |
-| 앱 갱신 | `npm run tokens:build`. 수동이다. 크로스 레포 CI 를 만들지 않는다 |
+| 앱 갱신 | `TOKENS_SHA` 만 바꾸는 별도 PR 에서 `npm run tokens:build`. 최신 SHA 는 표 아래 명령으로 읽는다. 기대값은 새 SHA 의 `tokens.json` 에서 센다. 수동이다. 크로스 레포 CI 를 만들지 않는다 |
 | 금지 | 색, 간격, 라운딩, 글자 크기를 `theme.ts` 밖에 하드코딩하는 것 |
 
-⚠️ **미해결.** `layout.touch-min` 이 40 인데 Apple HIG 는 44pt, Material 은 48dp 를 요구한다. 설계 문서 5.4.1 이 디자이너 확인 항목으로 올려둔 상태다. `theme.test.ts` 가 이걸 막고 있다. **테스트를 고쳐서 통과시키지 않는다.** 토큰을 올리는 게 해결이다.
+최신 SHA 조회. SHA 를 올리는 PR 에서 돌린다. 인증 없이 돈다 (`gh api` 는 로그인 없이 exit 4).
+
+```bash
+# 시작 SHA 는 dev 에서 읽는다. 출력 40자를 TOKENS_SHA 에 넣는다
+curl -fsS 'https://api.github.com/repos/Quizly-Team/frontend/commits?sha=dev&path=tokens/tokens.json&per_page=1' | node -p 'JSON.parse(require("fs").readFileSync(0, "utf8"))[0].sha'
+# ahead 가 0 이 아니면 design-tokens 에 dev 로 아직 안 들어온 커밋이 있다. 웹 레포에 머지 여부를 확인한다
+curl -fsS 'https://api.github.com/repos/Quizly-Team/frontend/compare/dev...design-tokens' | node -p 'const c = JSON.parse(require("fs").readFileSync(0, "utf8")); `ahead ${c.ahead_by} behind ${c.behind_by}`'
+```
+
+⚠️ **미해결.** `layout.touch-min` 이 40 인데 Apple HIG 는 44pt, Material 은 48dp 를 요구한다. 설계 문서 5.4.1 이 디자이너 확인 항목으로 올려둔 상태다. `theme.test.ts` 는 현재 값 40 을 고정한다. `TOKENS_SHA` 를 올린 PR 에서 토큰이 44 이상이면 그 테스트가 깨지고 그때 44 하한 단언으로 교체한다. 게이트는 이 미결 때문에 빨개지지 않는다 (2026-11-13 사람 결정 (a), `docs/ai/plan/1.md` §6-9). 토큰을 올리는 게 해결이다.
 
 ## 태블릿에서 폰으로
 

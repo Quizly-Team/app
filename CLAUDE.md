@@ -71,9 +71,9 @@ New Architecture(JSI, Fabric, TurboModules)가 기본이다. 브릿지는 없다
 
 **`src/shared/constants/theme.ts` 는 자동 생성물이다. 직접 수정하지 않는다.**
 
-단일 소스는 웹 레포(`Quizly-Team/frontend` `dev` 브랜치)의 `tokens/tokens.json` 이다. 디자이너는 피그마 Tokens Studio 에서 **웹 레포로만** Push 한다. 앱은 `npm run tokens:build` 로 받아 변환한다.
+단일 소스는 웹 레포(`Quizly-Team/frontend`)의 `tokens/tokens.json` 이다. 디자이너는 피그마 Tokens Studio 에서 **웹 레포로만** Push 한다. 앱은 `npm run tokens:build` 로 받아 변환한다. 앱은 브랜치를 따라가지 않고 **커밋 SHA 에 고정**해 받는다 (2026-11-27 결정). SHA 는 `scripts/build-tokens.mjs` 의 `TOKENS_SHA` 한 곳에 40자로 두고 생성물 `theme.ts` 머리에도 찍힌다. 갱신은 `TOKENS_SHA` 만 바꾸는 별도 PR 이고 그 PR 에 재생성물과 `theme.test.ts` 기대값 갱신이 따라온다.
 
-⚠️ **미해결.** `layout.touch-min` 이 40 인데 Apple HIG 는 44pt, Material 은 48dp 를 요구한다. 디자이너 확인 항목이다 (`docs/ai/` 설계 문서 5.4.1). 테스트가 막고 있으니 **테스트를 고쳐서 통과시키지 않는다.**
+⚠️ **미해결.** `layout.touch-min` 이 40 인데 Apple HIG 는 44pt, Material 은 48dp 를 요구한다. 디자이너 확인 항목이다 (`docs/ai/` 설계 문서 5.4.1). `theme.test.ts` 는 현재 값 40 을 고정한다. `TOKENS_SHA` 를 올린 PR 에서 토큰이 44 이상이면 그 테스트가 깨지고 그때 44 하한 단언으로 교체한다. 게이트는 이 미결 때문에 빨개지지 않는다 (2026-11-13 사람 결정 (a), `docs/ai/plan/1.md` §6-9).
 
 ## 구조
 
